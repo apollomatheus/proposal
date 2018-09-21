@@ -1,17 +1,13 @@
 
 const state = {
   pages: [
-    { url: '/', private: false, sectors: [ {sector: 'home', title: 'Home'}, ], },
-    { url: '/login', private: false, sectors: [ {sector: 'login', title: 'Login Page'}, ], },
     {
-      url: '/dashboard',
+      url: '/',
       private: true,
       sectors: [
-        {sector: 'home', title: 'Masternode Home'},
-        {sector: 'list', title: 'Masternode List'},
-        {sector: 'new', title: 'New Masternode'},
-        {sector: 'settings', title: 'Masternode Settings'},
-        {sector: 'setup', title: 'Masternode Setup'},
+        {sector: 'home', title: 'Home'},
+        {sector: 'list', title: 'Proposal List'},
+        {sector: 'status', title: 'System status'},
       ],
     },
   ],
@@ -81,20 +77,13 @@ const mutations = {
   },
   RESET_DB(state) {
     state.pages = [
-      //homepage
-      { url: '/', private: false, sectors: [ {sector: 'home', title: 'Home'}, ], },
-      //login
-      { url: '/login', private: false, sectors: [ {sector: 'login', title: 'Login Page'}, ], },
-      //dashboard
       {
-        url: '/dashboard',
-        private: true,
+        url: '/',
+        private: false,
         sectors: [
-          {sector: 'home', title: 'Masternode Home'},
-          {sector: 'list', title: 'Masternode List'},
-          {sector: 'new', title: 'New Masternode'},
-          {sector: 'settings', title: 'Masternode Settings'},
-          {sector: 'setup', title: 'Masternode Setup'},
+          {sector: 'home', title: 'Home'},
+          {sector: 'list', title: 'Proposal List'},
+          {sector: 'status', title: 'System status'},
         ],
       },
     ];

@@ -12,14 +12,14 @@ export default new Router({
       component: require('@/components/Home').default,
     },
     {
-      path: '/login',
-      name: 'login',
-      component: require('@/components/Login').default,
+      path: '/status',
+      name: 'status',
+      component: require('@/components/Status').default,
     },
     {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: require('@/components/dashboard/Home').default,
+      path: '/list',
+      name: 'list',
+      component: require('@/components/List').default,
     },
     {
       path: '*',

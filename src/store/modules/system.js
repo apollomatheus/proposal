@@ -1,9 +1,9 @@
 
 const state = {
   app: {
-    name: 'MasternodeSys',
-    title: 'MeSYNC',
-    description: 'Gerenciador de multíplos masternodes',
+    name: 'ZPSystem',
+    title: 'ZPSystem',
+    description: 'Sistema de listagem de propostas do sistema de Governança.',
     version: '0.1.0',
   },
 };
