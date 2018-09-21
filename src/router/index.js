@@ -12,16 +12,6 @@ export default new Router({
       component: require('@/components/Home').default,
     },
     {
-      path: '/status',
-      name: 'status',
-      component: require('@/components/Status').default,
-    },
-    {
-      path: '/list',
-      name: 'list',
-      component: require('@/components/List').default,
-    },
-    {
       path: '*',
       redirect: '/',
     },

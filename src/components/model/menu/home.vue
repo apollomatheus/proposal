@@ -1,43 +1,22 @@
 <template>
     <div id="menu" :validate="validate">
       <div v-if="ready">
-        <Logoff v-if="logoff"></Logoff>
+        <!-- <Logoff v-if="logoff"></Logoff> -->
 
         <v-btn @click="go('/','home')" color="primary"
             class="deep-orange" dark>
           Home
         </v-btn>
 
-        <!-- log- page -->
-        <v-btn @click="logaction()" color="primary"
+        <v-btn @click="go('/','list')" color="primary"
             class="deep-orange" dark>
-            <i class="fas fa-user deep-icon"></i>
-            {{loglabel()}}
+          Proposals
         </v-btn>
 
-        <!-- go to sector root -->
-        <v-btn @click="go('/dashboard','home')" v-if="settings.current.page.url !== '/dashboard' && dash.logged" color="primary"
+        <v-btn @click="go('/','status')" color="primary"
             class="deep-orange" dark>
-          <i class="fas fa-home deep-icon"> </i> 
-          Dashboard
+          List
         </v-btn>
-
-        <!-- sector change -->
-        <v-menu bottom origin="center center" transition="scale-transition" v-if="sysmenu()">
-          <v-btn slot="activator" color="primary"
-              class="deep-orange" dark>
-            <i class="fas fa-bars deep-icon"></i>
-            Dashboard
-          </v-btn>
-          <v-list class="blue" color="white">
-            <v-list-tile
-              v-for="(item, i) in items"
-              :key="i"
-              @click="go(item.url, item.sector)">
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-        </v-menu>
 
       </div>
     </div>
@@ -50,12 +29,6 @@
   export default {
     data () {
       return {
-        items: [
-          {title:'Home', url: '/dashboard', sector: 'home'},
-          {title:'List:', url: '/dashboard', sector: 'list'},
-          {title:'New', url: '/dashboard', sector: 'new'},
-          {title:'Settings', url: '/dashboard', sector: 'settings'},
-        ],
         page: {},
         emit: {
           redirect: {url: '', sector: '', trigger: false},
@@ -75,8 +48,8 @@
       }),
       validate() {
         //get session
-        this.session = window.$cookies.get('session');
-        this.$store.commit('CheckSession', this.session);
+        //this.session = window.$cookies.get('session');
+        //this.$store.commit('CheckSession', this.session);
 
         //get page info
         this.page = this.settings.current.page;
@@ -89,22 +62,6 @@
     },
 
     methods: { 
-        sysmenu() {
-          return this.dash.logged && this.settings.current.page.url === '/dashboard';
-        },
-        loglabel() {
-          if (this.dash.logged) {
-            return 'logout';
-          }
-          return 'login';
-        },
-        logaction() {
-          if (this.dash.logged) {
-            this.logoff = true;
-          } else {
-            this.go('/login','login');
-          }
-        },
         go(u,s) {
           //local triggering
           this.emit.redirect.url = u;
