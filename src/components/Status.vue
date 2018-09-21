@@ -1,101 +1,16 @@
 <template>    
-<div id="content" :begin="begin" class="application--wrap">
-      <div v-if="ready">
-        <div id="list">
-          <h3>
-            {{head.title}}
-            <div id="head-item-menu">
-               <v-btn slot="activator" color="primary"
-                        class="deep-orange" dark>
-                      <i class="fas fa-plus-circle deep-icon" aria-hidden="true"></i>
-                      Add Masternode 
-              </v-btn>
-               <v-btn slot="activator" color="primary"
-                        class="deep-orange" dark>
-                      <i class="fas fa-question-circle deep-icon" aria-hidden="true"></i>
-                      Help
-              </v-btn>
-            </div>
-          </h3> 
-          <hr />
-          <div id="list-body">
-            <div id="list-item" v-for="item in masternodes" v-bind:key="item">
-              <div id="list-item-info" class="head-list">
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                    ID:
-                  </div>
-                  <div id="list-item-value">
-                    {{item.id}}
-                  </div>
-                </div>
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                    Coin:
-                  </div>
-                  <div id="list-item-value">
-                    {{item.coin}} ( {{item.asset}} )
-                  </div>
-                </div>
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                    VPS IP Address:
-                  </div>
-                  <div id="list-item-value">
-                    <a :href="item.ip" target="_blank">{{item.ip}}</a>
-                  </div>
-                </div>
-
-                <!-- Keys -->
-                <div id="list-item-v" v-for="(ik,i) in item.keys" :key="i">
-                  <div id="list-item-name">
-                    {{ ik.name }}
-                  </div>
-                  <div id="list-item-value">
-                    {{ ik.value }}
-                  </div>
-                </div>
-                
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                    Status:
-                  </div>
-                  <div id="list-item-value" :class="statusClass(item.status)">
-                    <i :class="statusClassIcon(item.status)"> </i>
-                    {{ item.status }}
-                  </div>
-                </div>
-
-                <!-- item menu -->
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                  <v-menu bottom origin="center center" transition="scale-transition">
-                    <v-btn slot="activator" color="primary"
-                        class="deep-orange" dark>
-                      <i class="fas fa-bars"></i>  
-                    </v-btn>
-                    <v-list class="blue" color="white">
-                      <v-list-tile
-                        v-for="(x,i) in menuItems"
-                        :key="i"
-                        @click="go(x.sector)">
-                        <v-list-tile-title><i :class="x.icon" :style="x.style"></i> {{ x.title }}</v-list-tile-title>
-                      </v-list-tile>
-                    </v-list>
-                  </v-menu>
-                  </div>
-                </div>
-
-              </div>
-              <hr />
-            </div>
-            <center>
-              You can find more about each coin in their respective websites.
-            </center>
-          </div>
-        </div>
+<div id="content" class="application--wrap">
+    <div v-if="ready">
+      <h3> Hello this is {{head.title}} </h3>
+      <div v-if="error.valid">
+        <h3> Got error: {{error.message}} </h3>
+      </div>
+      <div v-if="infoReady">
+        <h3 v-if="!status"> Empty information </h3>
+        
       </div>
     </div>
+</div>
 </template>
 
 <script>
@@ -106,68 +21,55 @@
     data () {
       return {
         head: {},
-        menuItems: [
-          {title:'Log', url: '/dashboard', sector: 'home', icon: 'fas fa-exclamation-triangle', style: "color: white;"},
-          {title:'Setup', url: '/dashboard', sector: 'setup', icon: 'fas fa-cog', style: "color: white;"},
-          {title:'Remove', url: '/dashboard', sector: 'home', icon: 'fas fa-times', style: "color: white;"},
-        ],
-        masternodes: [
-          {
-            id:0, coin: 'ZCore', asset: 'ZCR', ip: '127.0.0.1', 
-            status: 'Enabled',
-            keys: [
-              {name: 'Masterode Genkey', value: 'Z.....'},
-              {name: 'Collateral Tx', value: '0000.....'},
-            ],
-            report: [
-              {date: '12/09/2018', action: 'ENABLED'},
-              {date: '12/09/2018 11:12:13', action: 'NEW_START_REQUIRED'},
-              {date: '12/09/2018 11:13:13', action: 'ENABLED'},
-            ],
-          },
-          {
-            id:1, coin: 'SmartCash', asset: 'SMC', ip: '127.0.0.2', 
-            status: 'Disabled', 
-            keys: [
-              {name: 'Masterode Genkey', value: 'Z.....'},
-              {name: 'Collateral Tx', value: '0000.....'},
-            ],
-            report: [
-              {date: '12/09/2018', action: 'ENABLED'},
-            ],
-          },
-        ],
         ready: false,
+        infoReady: false,
+        watchers: [],
+        status: [],
+        error: {
+          message: '',
+          valid: false,
+        }
       };
     },
 
     computed: {
       ...mapState({
         settings: state => state.settings,
+        dash: state => state.dash,
       }),
-      begin() {
-        this.head = this.settings.current.page.head;
-        this.ready = true;
-      },
     },
 
     methods: {
-      statusClass(s) {
-        if (s.toLowerCase() === 'enabled') {
-          return 'deep-tag ok-tag';
-        }
-        return 'deep-tag nok-tag'; 
-      },
-      statusClassIcon(s) {
-        if (s.toLowerCase() === 'enabled') {
-          return 'fas fa-check-circle';
-        }
-        return 'fas fa-exclamation-triangle'; 
-      },
       go(s) {
         this.$store.commit('EMIT_REDIRECT', { url: this.settings.current.page.url, sector: s });
       },
     },
+
+    created() {
+        this.head = this.settings.current.page.head;
+        this.ready = true;
+        //call for task proposal
+        this.$store.commit('GetApiTask',{id:'GSS'});
+        //create a watcher
+        let watchNUM = this.watchers.length;
+        this.watchers.push(setInterval(()=>{
+          if (this.dash.task.ready) {
+            if (this.dash.task.error.length > 0) {
+              this.error.message = this.dash.task.error;
+              this.error.valid = true;
+            } else {
+              if (!this.dash.task.result.proposals) {
+                this.error.message = 'Failed to connect to API.';
+                this.error.valid = true;
+              } else {
+                this.proposals = this.dash.task.result.proposals;
+                this.infoReady = true;
+              }
+            }
+            clearInterval(this.watchers[watchNUM]);
+          }
+        }));
+    }
   }
 </script>
 

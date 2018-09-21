@@ -31,24 +31,26 @@ const mutations = {
   SavePage(state, payload) {
     const url = payload.url;
     const sector = payload.sector;
+    console.log('Emited by: ',payload.who);
 
     let found = false;
     //find url
     for (let i = 0; i < state.pages.length; i++) {
       if (state.pages[i].url === url) {
-        //find sector
         state.current.page.url = state.pages[i].url;
+
+        //find sector
         for (let n = 0; n < state.pages[i].sectors.length; n++) {
           if (state.pages[i].sectors[n].sector === sector) {
             state.current.page.head = state.pages[i].sectors[n];
             state.current.page.cache = payload.cache;
+            console.log('page found!',sector,url);
             found = true;
             break;
           }
         }
-        if (found) {
-          break;
-        }
+
+        break;
       }
     }
     if (!found) {

@@ -2,56 +2,70 @@ const request = require('request');
 
 
 const state = {
+    api_url: 'http://localhost:3000',
     logged: false,
     session: '',
+    task: {
+        id: '',
+        ready: false,
+        error: '',
+        result: {},
+    },
+    config: [],
+    responses: [
+        {code: 11, valid: true},
+        {code: 12, valid: false, error: "Missing post param"},
+        {code: 13, valid: false, error: "Missing get param"},
+        {code: 14, valid: false, error: "Missing param"},
+        {code: 15, valid: false, error: "Connection error"},
+    ]
 };
 
-
+///Task handler
+///GSS-> Get System Status
+///GSP-> Get System Proposals
 const mutations = {
-    ClearSession(state) {
-        if (state.logged && state.session != '') {
-            request.post({
-                url:     'http://localhost:3000/logout/',
-                form:    { user: stored.session }
-            }, function(error, response, body){
-                if (error) throw error;
-                state.logged = false;
-                state.session = '';
-            });
+    GetApiTask(state, task) {
+        if (state.task.id == task.id) {
+            if (state.task.ready == false) return;
         }
-    },
-    CheckSession(state, session) {
-        if (session !== null) {
-            request.post({
-                url:     'http://localhost:3000/validate/',
-                form:    { user: stored.session }
-            }, function(error, response, body){
-                if (!error) {
-                    if (body.status == 200) {
-                        state.logged = true;
-                        state.session = body.session;
-                        return;
-                    } 
-                }
-                state.logged = false;
-                state.session = '';
-            });
-        } 
-    },
-    TryLogin(state, stored) {
-        request.post({
-            url:     'http://localhost:3000/login/',
-            form:    { user: stored.user, pwd: stored.password }
+
+        state.task.id = task.id;
+        state.task.ready = false;
+        state.task.error = '';
+        
+        let url = state.api_url;
+        switch (task.id) {
+            case "GSS": {
+                url += '/status';
+                break;
+            }
+            case "GSP": {
+                url += '/proposals';
+                break;
+            }
+            default:
+            return;
+        }
+
+        request({
+            url,
         }, function(error, response, body){
-            if (error) throw error;
-            if (body.status != 200) throw body.error;
-            if (body.status == 200) {
-                state.logged = true;
-                state.session = body.session;
+            state.task.ready = true;
+            if (response) {
+                if (response.statusCode != 200)
+                    state.task.error = 'Connection failed!';
+            }
+            if (error) {
+                state.task.error = error;
+            } else if (body.status != 200) {
+                state.task.error = body.error;
+            } else if (body.status == 200) {
+                state.task.result = body.result;
             }
         });
-    },
 
+    },
 };
   
 export default {
