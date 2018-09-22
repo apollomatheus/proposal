@@ -24,7 +24,7 @@
 <script>
   import Alert from './model/Alert'
   import Logo from './model/logo/logo'
-  import Menu from './model/menu/home'
+  import Menu from './model/menu/menu'
   import axios from 'axios'
   import {mapState} from 'vuex'
 

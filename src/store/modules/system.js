@@ -1,9 +1,9 @@
 
 const state = {
   app: {
-    name: 'ZPSystem',
-    title: 'ZPSystem',
-    description: 'Sistema de listagem de propostas do sistema de Governança.',
+    name: 'ZGovSystem',
+    title: 'ZGovSystem',
+    description: 'Sistema de Governança ZCore.',
     version: '0.1.0',
   },
 };

@@ -1,12 +1,12 @@
 <template>    
 <div id="content" class="application--wrap">
     <div v-if="ready">
-      <h3> Hello this is {{head.title}} </h3>
 
       <div v-if="error.valid">
         <h3> Got error: {{error.message}} </h3>
       </div>
 
+      <Loading v-if="!listReady"></Loading>
       <div v-if="listReady">
         <h3 v-if="!proposals"> Empty list </h3>
         <div v-if="proposals" id="list">
@@ -15,69 +15,83 @@
             <div id="head-item-menu">
                <v-btn slot="activator" color="primary"
                         class="deep-orange" dark>
-                      <i class="fas fa-question-circle deep-icon" aria-hidden="true"></i>
-                      Help
+                      <i class="fas fa-question-circle deep-icon " aria-hidden="true"></i>
+                      <div class="tooltip">Help
+                        <span class="tooltiptext tooltiptext-left">
+                          <p>
+                            This is a list with all proposals registered.
+                            <br>
+                            Use <b>buttons</b> to copy each vote rapidly.
+                            <br>
+                            Paste the text inside Debug console. 
+                          </p>
+                        </span>
+                      </div>
               </v-btn>
             </div>
           </h3> 
-          
+
           <hr />
 
           <div id="list-body">
-            <div id="list-item" v-for="item in proposals" v-bind:key="item">
-              <div id="list-item-info" class="head-list">
-
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                    Description:
-                  </div>
-                  <div id="list-item-value">
-                    {{item.description}}
-                  </div>
-                </div>
-
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                    URL:
-                  </div>
-                  <div id="list-item-value">
-                    {{item.url}} 
-                  </div>
-                </div>
-
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                    Votes
-                  </div>
-                  <div id="list-item-value">
-                    {{item.votes.yes}} / {{item.votes.no}}
-                  </div>
-                </div>
-                
-                <!-- action buttons -->
-                <div id="list-item-v">
-                  <div id="list-item-name">
-                  <v-menu bottom origin="center center" transition="scale-transition">
-
-                    <v-btn slot="activator" color="primary"
-                        class="deep-orange" dark>
-                      <i class="fas fa-bars"></i>  
-                    </v-btn>
-                    <v-list class="blue" color="white">
-                      <v-list-tile
-                        v-for="(x,i) in menuItems"
-                        :key="i"
-                        @click="action(item,x.action)">
-                        <v-list-tile-title><i :class="x.icon" :style="x.style"></i> {{ x.title }}</v-list-tile-title>
-                      </v-list-tile>
-                    </v-list>
-
-                  </v-menu>
-                  </div>
-                </div>
-
+            <div id="list-item" class="body-list-initial">
+              <div id="list-item-info" class="body-list">
+                <table id="list-table">
+                  <tr id="list-head-item">
+                    <th id="list-th">
+                        Name / Document
+                      <hr />
+                    </th>
+                    <th id="list-th">
+                        Amount
+                      <hr />
+                    </th>
+                    <th id="list-th">
+                        Votes (Yes/No)
+                      <hr />
+                    </th>
+                    <th id="list-th">
+                        Actions
+                      <hr />
+                    </th>
+                  </tr>
+                  <tr id="list-table-item" v-for="(item,index) in proposals" :key="index">
+                    <td>
+                      <div id="list-item-name">
+                        {{item.name}}
+                      </div>
+                      <div id="list-item-name">
+                        <a :href="item.url">{{item.url}}</a>
+                      </div>
+                    </td>
+                    <td>
+                      <div id="list-item-name">
+                        {{item.amount}}
+                      </div>
+                    </td>
+                    <td>
+                      <div id="list-item-name">
+                      <i class="fas fa-check"></i> {{item.votes.yes}} / <i class="fas fa-times"></i> {{item.votes.no}} 
+                      </div>
+                    </td>
+                    <td style="width: 250px;">
+                      <div id="list-item-name" style="float:left; width: 200px;">
+                            <v-btn id="vote-yes" slot="activator" style="background-color: #0bc759; color: white;"
+                            @click="clickAction('copyYes',item,'vote-yes','Copy Vote Yes')">
+                              <i class="fas fa-check" style="padding-right: 5px;"></i>  
+                              Copy Vote Yes
+                            </v-btn>
+                            
+                            <v-btn id="vote-no" slot="activator" style="background-color: #db3838; color: white;"
+                            @click="clickAction('copyNo',item,'vote-no', 'Copy Vote No')">
+                              <i class="fas fa-times" style="padding-right: 5px;"></i> 
+                              Copy Vote No 
+                            </v-btn>
+                          </div>
+                    </td>
+                  </tr>
+                </table>
               </div>
-              <hr />
             </div>
           </div>
         </div>
@@ -87,7 +101,7 @@
 </template>
 
 <script>
-
+  import Loading from './model/Loading'
   import {mapState} from 'vuex'
 
   export default {
@@ -102,13 +116,11 @@
           message: '',
           valid: false,
         },
-        menuItems: [
-          {title:'Copy Vote Yes', icon: 'fas fa-',      style: "color: white;", action: 'copyYes'},
-          {title:'Copy Vote No',  icon: 'fas fa-cog',   style: "color: white;", action: 'copyNo'},
-         ],
       };
     },
-
+    components: {
+      Loading,
+    },
     computed: {
       ...mapState({
         settings: state => state.settings,
@@ -117,21 +129,32 @@
     },
 
     methods: {
-      action(item,action) {
-        if (action == "copyYes" || action == "copyNo") {
-            var opt = (action == "copyYes") ? " yes":" no";
-            var textArea = document.createElement("textarea");
-            textArea.style.hidden = true;
-            textArea.value = "gobject vote-many "+item.hash+opt;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-              var successful = document.execCommand('copy');
-              var msg = successful ? 'successful' : 'unsuccessful';
-              console.log('Copied: ' + msg);
-            } catch (err) {
-              console.error('Failed to copy: ', err);
-            }
+      updateElementHTML(id,value) {
+        var obj = document.getElementById(id);
+        if (obj) {
+          obj.innerHTML = value;
+        }
+      },
+      copyText(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.hidden = true;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        textArea.parentNode.removeChild(textArea);
+      },
+      clickAction(id,param,elementid,text) {
+        if (id == "copyYes" || id == "copyNo") {
+            var opt = (id == "copyYes") ? " yes":" no";
+            var cl = (id == "copyYes") ? "fas fa-check":"fas fa-times";
+            this.copyText("gobject vote-many "+param.hash+opt);
+            var bf = '<i class="'+cl+'" style="padding-right: 5px;"></i> Copied';
+            var af = '<i class="'+cl+'" style="padding-right: 5px;"></i> '+text;
+            this.updateElementHTML(elementid,bf);
+            setTimeout(()=>{
+              this.updateElementHTML(elementid,af);
+            },3000);
         }
       },
       go(s) {
@@ -156,6 +179,18 @@
               this.proposals = this.dash.task.result.proposals;
               this.listReady = true;
             }
+            this.proposals = [
+              {
+                hash: 'abcdefghijklmnopqrstuvxwyz1234567890',
+                name: 'Proposal test',
+                url: 'http://www.internet.com',
+                amount: 100.00,
+                votes: {
+                  yes: 100,
+                  no: 20,
+                }
+              }
+            ]
             clearInterval(this.watchers[watchNUM]);
           }
         }));
@@ -188,50 +223,88 @@
   text-align: left;
   font-size: 30px;
 }
-
 #list-item-info {
   font-size: 16px;
   position: relative;
   padding: 10px;
   margin-top: 1px;
 }
-
 #list-item-v {
   position: relative;
   margin: 10px;
 }
-
-#list-item-name {
-  display: inline;
-  left: 35px;
-}
-
 #list-item-value {
   position: absolute;
   display: inline;
   right: 35px;
 }
-
 #head-item-menu {
   position: absolute;
   display: inline;
   top: 15px;
   right: 35px;
 }
-
-
 .head-list {
   color: black;
   border: 1px outset #aaaaaa;
   box-shadow: 1px 1px 1px 1px #aaaaaa;
 }
-
 .body-list {
   color: black;
   border: 1px outset #aaaaaa;
   box-shadow: 1px 1px 1px 1px #aaaaaa;
 }
+#list-head-item-v {
+  display: inline;
+  position: relative;
+  padding: 120px;
+  -webkit-text-stroke-width: medium;
+}
+#list-table {
+  position: relative;
+  width: 100%;
+}
+#list-item-name {
+  max-width: 400px;
+  padding-left: 20px;
+  padding-top: 10px;
+  word-wrap: break-word;
+  font-family: Trebuchet MS, sans-serif;
+}
+#list-item {
+  color: black;
+  padding: 20px;
+}
 
+
+#list-table-item {
+  color: black;
+  padding: 20px;
+  padding-top: 40px;
+}
+#list-head-item-name {
+  display: inline;
+  left: 35px;
+  font-weight: 900;
+}
+#list-head-item {
+  position: relative;
+  padding: 20px;
+}
+#list-th {
+  padding-top:0;
+  text-align: left;
+  line-height: 2;
+  font-size: 15px;
+  font-weight:800;
+  padding-left: 10px;
+  color: #1c1b1dd3;
+  font-family: monospace;
+}
+
+.body-list-initial {
+  min-height: 500px;
+}
 .deep-tag {
   color: white;
   padding: 5px;
@@ -243,5 +316,39 @@
 }
 .nok-tag {
   background-color: rgb(198, 98, 78);
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    min-width: 120px;
+    min-height: 100px;
+    width: auto;
+    height: auto;
+    top: -10px;
+    padding: 30px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s;
+    -webkit-text-stroke-width: medium;
+}
+.tooltip .tooltiptext-right {
+    left: 200%;
+}
+.tooltip .tooltiptext-left {
+    right: 200%;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 </style>

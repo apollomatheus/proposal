@@ -34,24 +34,24 @@
 <style scoped>
 #logo {
     text-align: left;
-    background-color: hsl(0, 0%, 100%);
+    background-color: #008854;
     line-height: 1.3em;
-    height: 80px;
+    height: 130px;
     box-shadow: 0px 3px 3px 0px #d6d6d6ff;
     margin-bottom: 5px;
 }
 
 h2 {
-    padding-top: 20px;
+    padding-top: 60px;
     font-family: Calibri;
-    padding-left: 10px;
-    color: #1a1a1a;
-    font-size: 36;
+    padding-left: 25px;
+    color: #5cffc0;
+    font-size: 36px;
 }
 
 h3 {
-    padding-left: 10px;
-    color: #cbccca;
-    font-size: 8;
+    padding-left: 25px;
+    padding-top: 10px;
+    color: #eff8e6;
 }
 </style>

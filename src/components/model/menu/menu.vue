@@ -60,8 +60,8 @@
 <style scoped>
     #menu {
         position: absolute;
-        top: 20px;
-        right: 5px;
+        top: 65px;
+        right: 10px;
         color: #001b1f;
         width: fit-content;
         height: fit-content;
