@@ -21,7 +21,7 @@
                           <p>
                             This is a list with all proposals registered.
                             <br>
-                            Use <b>buttons</b> to copy each vote rapidly.
+                            Use <b> actions buttons</b> to copy each vote rapidly.
                             <br>
                             Paste the text inside Debug console. 
                           </p>
@@ -51,7 +51,7 @@
                       <hr />
                     </th>
                     <th id="list-th">
-                        Actions
+                        <i class="fas fa-cog"></i> Actions
                       <hr />
                     </th>
                   </tr>
@@ -66,6 +66,7 @@
                     </td>
                     <td>
                       <div id="list-item-name">
+                        <i class="icon-zcore"></i>
                         {{item.amount}}
                       </div>
                     </td>
@@ -73,21 +74,34 @@
                       <div id="list-item-name">
                       <i class="fas fa-check"></i> {{item.votes.yes}} / <i class="fas fa-times"></i> {{item.votes.no}} 
                       </div>
+                      <div id="list-item-name"  v-if="item.votes.yes >= item.masternodes * 0.10" style="color: #00aa00dd">
+                          <i class="fas fa-check"></i> 
+                          {{item.masternodes * 0.10}} % (Approved)
+                      </div>
+                      <div id="list-item-name"  v-if="item.votes.yes < item.masternodes * 0.10" style="color: #aa0000dd">
+                          <i class="fas fa-times"></i> 
+                          {{item.masternodes * 0.10}} % (Not Approved)
+                      </div>
                     </td>
+                    <!-- actions -->
                     <td style="width: 250px;">
-                      <div id="list-item-name" style="float:left; width: 200px;">
-                            <v-btn id="vote-yes" slot="activator" style="background-color: #0bc759; color: white;"
-                            @click="clickAction('copyYes',item,'vote-yes','Copy Vote Yes')">
-                              <i class="fas fa-check" style="padding-right: 5px;"></i>  
-                              Copy Vote Yes
-                            </v-btn>
-                            
-                            <v-btn id="vote-no" slot="activator" style="background-color: #db3838; color: white;"
-                            @click="clickAction('copyNo',item,'vote-no', 'Copy Vote No')">
-                              <i class="fas fa-times" style="padding-right: 5px;"></i> 
-                              Copy Vote No 
-                            </v-btn>
-                          </div>
+                      <div id="list-item-name" style="float:left; width: 200px;" :class="item.index">
+
+                        <v-btn id="copy-yes" class="button-collapse" slot="activator"
+                            style="color:#2d3a30; background-color: #2fdd55;"
+                            @click="ClickAction('copyYes',item,{id:'copy-yes', class: item.index},'Copy Vote Yes') ">
+                            <i class="fas fa-check" style="padding-right: 5px;"></i>  
+                            <span class="span-collapse" id="input-spam"> Copy Vote Yes </span>
+                        </v-btn>
+
+                        <v-btn  id="copy-no" class="button-collapse" slot="activator" 
+                            style="color:white; background-color: #f17034;"
+                            @click="ClickAction('copyNo',item,{id:'copy-no', class: item.index},'Copy Vote No')">
+                            <i class="fas fa-times" style="padding-right: 5px;"></i> 
+                            <span class="span-collapse" id="input-spam"> Copy Vote No </span> 
+                        </v-btn>
+
+                      </div>
                     </td>
                   </tr>
                 </table>
@@ -103,7 +117,20 @@
 <script>
   import Loading from './model/Loading'
   import {mapState} from 'vuex'
-
+  
+  HTMLCollection.prototype.getChildElementById = function(id) {
+    if (this.length > 0 && id) {
+      for (var i = 0; i < this.length; i++) {
+        if (this[i]) {
+            if (this[i].id == id) {
+                return this[i]; 
+              }
+          }
+      }
+    }
+    return null;
+  }
+  
   export default {
     data () {
       return {
@@ -129,11 +156,19 @@
     },
 
     methods: {
+      updateElement(element,html) {
+        if (element) {
+          element.innerHTML = html;
+        }
+      },
       updateElementHTML(id,value) {
         var obj = document.getElementById(id);
-        if (obj) {
-          obj.innerHTML = value;
-        }
+        this.updateElement(obj,value);
+      },
+      updateElementHTML2(classname,id,value) {
+        var x = document.getElementsByClassName(classname)[0];
+        var y = x.children.getChildElementById(id);
+        this.updateElement(y,value);
       },
       copyText(text) {
         var textArea = document.createElement("textarea");
@@ -144,16 +179,19 @@
         document.execCommand('copy');
         textArea.parentNode.removeChild(textArea);
       },
-      clickAction(id,param,elementid,text) {
+      ClickAction(id,param,element,text) {
         if (id == "copyYes" || id == "copyNo") {
             var opt = (id == "copyYes") ? " yes":" no";
             var cl = (id == "copyYes") ? "fas fa-check":"fas fa-times";
             this.copyText("gobject vote-many "+param.hash+opt);
-            var bf = '<i class="'+cl+'" style="padding-right: 5px;"></i> Copied';
-            var af = '<i class="'+cl+'" style="padding-right: 5px;"></i> '+text;
-            this.updateElementHTML(elementid,bf);
-            setTimeout(()=>{
-              this.updateElementHTML(elementid,af);
+            //inner element
+            var obj = document.getElementsByClassName(element.class)[0];
+            var btn = obj.children.getChildElementById(element.id);
+            var span = btn.children[0].children[1];//span element
+            this.updateElement(span,'Copied');
+            //default text
+            setTimeout(()=> {
+              this.updateElement(span,text);
             },3000);
         }
       },
@@ -181,15 +219,29 @@
             }
             this.proposals = [
               {
+                index: '1',
                 hash: 'abcdefghijklmnopqrstuvxwyz1234567890',
                 name: 'Proposal test',
                 url: 'http://www.internet.com',
                 amount: 100.00,
+                masternodes: 120,
                 votes: {
                   yes: 100,
                   no: 20,
                 }
-              }
+              },
+              {
+                index: '2',
+                hash: 'abcdefghijklmnopqrstuvxwyz1234567890',
+                name: 'Proposal test 2',
+                url: 'http://www.internet.br',
+                amount: 10.00,
+                masternodes: 120,
+                votes: {
+                  yes: 10,
+                  no: 100,
+                }
+              },
             ]
             clearInterval(this.watchers[watchNUM]);
           }
@@ -318,6 +370,50 @@
   background-color: rgb(198, 98, 78);
 }
 
+.button-collapse {
+ width: 50px;
+ height: 50px;
+ background-color: white;
+ box-shadow:1px 1px #12211222;
+ border-radius: 10px;
+ font-size: 15px;
+}
+
+.span-collapse {
+ opacity: 0;
+ font-size: 0;
+}
+
+.button-collapse:hover {
+ width: 150px;
+ height: 50px;
+ transition:all 0.4s ease 0s;
+}
+
+.button-collapse:hover .span-collapse {
+ opacity: 1;
+ font-size: 15px;
+ transition:all 0.4s ease 0s;
+}
+
+.button-dark {
+ color:white;
+ background-color: #223322aa;
+}
+
+.button-white {
+ color: #223322ff;
+ background-color: #ddddddaa;
+}
+
+.icon-zcore {
+ width: 20px;
+ height: 13px;
+ display: inline-block;
+ background-image: url('/static/zcore.svg');
+ background-repeat: no-repeat;
+}
+
 .tooltip {
     position: relative;
     display: inline-block;
@@ -339,7 +435,7 @@
     z-index: 1;
     opacity: 0;
     transition: opacity 0.3s;
-    -webkit-text-stroke-width: medium;
+    -webkit-text-stroke-width: thin;
 }
 .tooltip .tooltiptext-right {
     left: 200%;

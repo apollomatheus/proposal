@@ -3,14 +3,8 @@
       <Logo> </Logo>
       <Menu> </Menu>
       <div v-if="ready">
-        <List v-if="info.head.sector === 'list'"> </List>
+        <List v-if="info.head.sector === 'list' || info.head.sector === 'home'"> </List>
         <Status v-if="info.head.sector === 'status'"> </Status>
-        <div v-if="info.head.sector === 'home'"> 
-          <h1>{{info.head.title}}</h1>
-          <p>
-            Hello!
-          </p>
-        </div>
       </div>
     </div>
 </template>
@@ -30,7 +24,7 @@
         info: {
           url: '/',
           root: 'home',
-          sector: 'home',
+          sector: 'list',
           head: { url: '/', sector: 'home' },
         },
         watcher: [],

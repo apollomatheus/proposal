@@ -1,19 +1,16 @@
 <template>
     <div id="menu" :begin="begin">
       <div v-if="ready">
-
-        <v-btn @click="go('/','home')" color="primary"
-            class="deep-orange" dark>
-          Home
-        </v-btn>
-
+        
         <v-btn @click="go('/','list')" color="primary"
             class="deep-orange" dark>
+          <i class="fa fa-list" style="padding-right: 5px;"></i>
           Proposals
         </v-btn>
 
         <v-btn @click="go('/','status')" color="primary"
             class="deep-orange" dark>
+          <i class="fa fa-cogs" style="padding-right: 5px;"></i>
           Status
         </v-btn>
 
