@@ -1,5 +1,6 @@
 <template>    
 <div id="content" class="application--wrap">
+  
     <div v-if="ready">
 
       <div v-if="error.valid">
@@ -40,23 +41,26 @@
                   <tr id="list-head-item">
                     <th id="list-th">
                         Name / Document
-                      <hr />
                     </th>
                     <th id="list-th">
-                        Amount
-                      <hr />
+                        Payment
+                    </th>
+                    <th id="list-th">
+                        Amount Asked / Available
                     </th>
                     <th id="list-th">
                         Votes (Yes/No)
-                      <hr />
+                    </th>
+                    <th id="list-th">
+                        Status
                     </th>
                     <th id="list-th">
                         <i class="fas fa-cog"></i> Actions
-                      <hr />
                     </th>
                   </tr>
+                  <!-- proposal informations -->
                   <tr id="list-table-item" v-for="(item,index) in proposals" :key="index">
-                    <td>
+                    <td id="list-td">
                       <div id="list-item-name">
                         {{item.name}}
                       </div>
@@ -64,27 +68,43 @@
                         <a :href="item.url">{{item.url}}</a>
                       </div>
                     </td>
-                    <td>
+                    <!-- paument -->
+                    <td id="list-td">
                       <div id="list-item-name">
-                        <i class="icon-zcore"></i>
-                        {{item.amount}}
+                        {{item.amount.payment.paid}} / {{item.amount.payment.total}} 
                       </div>
                     </td>
-                    <td>
+                    <!-- amount -->
+                    <td id="list-td">
+                      <div id="list-item-name">
+                        <i class="icon-zcore"></i>
+                        {{item.amount.request}} 
+                        <br>
+                        <i class="icon-zcore"></i>
+                        {{item.amount.available}} 
+                      </div>
+                    </td>
+                    <!-- votes -->
+                    <td id="list-td">
                       <div id="list-item-name">
                       <i class="fas fa-check"></i> {{item.votes.yes}} / <i class="fas fa-times"></i> {{item.votes.no}} 
+                      <br>
+                      Total: {{item.votes.yes-item.votes.no}}
                       </div>
-                      <div id="list-item-name"  v-if="item.votes.yes >= item.masternodes * 0.10" style="color: #00aa00dd">
+                    </td>
+                    <!-- status -->
+                    <td id="list-td">
+                      <div id="list-item-name"  v-if="(item.votes.yes-item.votes.no) >= item.masternodes * 0.10" style="color: #00aa00dd">
                           <i class="fas fa-check"></i> 
-                          {{item.masternodes * 0.10}} % (Approved)
+                          Passing
                       </div>
-                      <div id="list-item-name"  v-if="item.votes.yes < item.masternodes * 0.10" style="color: #aa0000dd">
+                      <div id="list-item-name"  v-if="(item.votes.yes-item.votes.no) < item.masternodes * 0.10" style="color: #aa0000dd">
                           <i class="fas fa-times"></i> 
-                          {{item.masternodes * 0.10}} % (Not Approved)
+                          Insufficient Votes
                       </div>
                     </td>
                     <!-- actions -->
-                    <td style="width: 250px;">
+                    <td style="width: 250px;" id="list-td">
                       <div id="list-item-name" style="float:left; width: 200px;" :class="item.index">
 
                         <v-btn id="copy-yes" class="button-collapse" slot="activator"
@@ -223,7 +243,14 @@
                 hash: 'abcdefghijklmnopqrstuvxwyz1234567890',
                 name: 'Proposal test',
                 url: 'http://www.internet.com',
-                amount: 100.00,
+                amount: {
+                  payment: {
+                    paid: 1,
+                    total: 5,
+                  },
+                  request: 10.00,
+                  available: 2.00,
+                },
                 masternodes: 120,
                 votes: {
                   yes: 100,
@@ -235,11 +262,18 @@
                 hash: 'abcdefghijklmnopqrstuvxwyz1234567890',
                 name: 'Proposal test 2',
                 url: 'http://www.internet.br',
-                amount: 10.00,
+                amount: {
+                  payment: {
+                    paid: 1,
+                    total: 5,
+                  },
+                  request: 10.00,
+                  available: 2.00,
+                },
                 masternodes: 120,
                 votes: {
                   yes: 10,
-                  no: 100,
+                  no: 5,
                 }
               },
             ]
@@ -252,10 +286,14 @@
 
 <style scoped>
 
+.application--wrap {
+  min-height: 100px;
+  margin-top: 50px;
+}
+
 #content {
   background-color: #eeecec;
-  padding: 80px;
-  left: 0;
+  padding: 0;
   color: rgb(0, 0, 0);
 }
 
@@ -265,8 +303,7 @@
   line-height: 1.6em;
   text-align: left;
   margin: 10px;
-  border: 1px outset #aaaaaa;
-  box-shadow: 1px 1px 1px 1px #aaaaaa;
+  box-shadow: 1px 1px 1px 1px #aaaaaa33;
 }
 
 
@@ -274,6 +311,7 @@
   padding: 30px;
   text-align: left;
   font-size: 30px;
+  color: #00000066;
 }
 #list-item-info {
   font-size: 16px;
@@ -303,8 +341,7 @@
 }
 .body-list {
   color: black;
-  border: 1px outset #aaaaaa;
-  box-shadow: 1px 1px 1px 1px #aaaaaa;
+  box-shadow: 1px 1px 1px 1px #aaaaaa33;
 }
 #list-head-item-v {
   display: inline;
@@ -322,6 +359,7 @@
   padding-top: 10px;
   word-wrap: break-word;
   font-family: Trebuchet MS, sans-serif;
+  font-size: 12px;
 }
 #list-item {
   color: black;
@@ -347,11 +385,15 @@
   padding-top:0;
   text-align: left;
   line-height: 2;
-  font-size: 15px;
+  font-size: 12px;
   font-weight:800;
   padding-left: 10px;
   color: #1c1b1dd3;
   font-family: monospace;
+  border-bottom: 5px solid #00000011;
+}
+#list-td {
+  border-bottom: 5px solid #00000011;
 }
 
 .body-list-initial {

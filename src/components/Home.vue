@@ -3,8 +3,8 @@
       <Logo> </Logo>
       <Menu> </Menu>
       <div v-if="ready">
+        <Status> </Status>
         <List v-if="info.head.sector === 'list' || info.head.sector === 'home'"> </List>
-        <Status v-if="info.head.sector === 'status'"> </Status>
       </div>
     </div>
 </template>
@@ -61,8 +61,6 @@
           if (this.info.sector !== this.settings.current.page.head.sector) {
             this.info.head = this.settings.current.page.head;
             this.info.sector = this.info.head.sector;
-            console.log('Page::NextSector--->');
-            console.log(this.info);
           }
         },1300));
     }
@@ -70,6 +68,9 @@
 </script>
 
 <style scoped>
+.application--wrap {
+  min-height: 100px;
+}
 #content {
   top: 0;
   bottom: 0;

@@ -1,21 +1,17 @@
 <template>
+ <div>
+      <!--
     <div id="menu" :begin="begin">
       <div v-if="ready">
-        
         <v-btn @click="go('/','list')" color="primary"
             class="deep-orange" dark>
           <i class="fa fa-list" style="padding-right: 5px;"></i>
-          Proposals
+          Proposals Board
         </v-btn>
-
-        <v-btn @click="go('/','status')" color="primary"
-            class="deep-orange" dark>
-          <i class="fa fa-cogs" style="padding-right: 5px;"></i>
-          Status
-        </v-btn>
-
       </div>
     </div>
+      -->
+  </div>
 </template>
 
 <script>
@@ -49,8 +45,6 @@
           console.log('Menu Redirect triggered');
         },
     },
-    created() {
-    }
   }
 </script>
 
