@@ -1,5 +1,5 @@
 <template>    
-<div id="content" class="application--wrap">
+<div id="content" class="status-content application--wrap">
   <!-- created by apollo - color definitions -->
   <svg width="0px" height="0px" style="hidden:true;">
     <defs>
@@ -32,12 +32,12 @@
         <div class="voting-header"> 
         <div class="left-div">
               <center><h3> Voting  Deadline </h3></center>
-              <center><h2> <b>5 days</b> </h2></center>
+              <center><h2> <b>{{status.deadline}} DAYS</b> </h2></center>
         </div>
         <div class="voting-header"> 
         <div class="middle-div">
               <br>
-              <h3> Budget Requested: 10000</h3>
+              <h3> Budget Requested: <i data-v-264bddce="" class="icon-zcore"></i>{{status.amount.requested}} </h3>
               <div class="progress">
               <svg class="svg-progress" height="100" width="500">
                 <path d="M0 0 L 500 0 L 500 70 L 0 70Z" fill="white" />
@@ -45,11 +45,11 @@
               </svg>
               <div class="progress-information">
               <div id="svg-progress-left">
-                  <h2>1000</h2>
+                  <h2>{{status.proposal.passing}}</h2>
                   <h3>Passing Proposals</h3>
               </div>
               <div id="svg-progress-right">
-                  <h2>5</h2>
+                  <h2>{{status.proposal.insufficient}}</h2>
                   <h3>Insufficient votes</h3>
               </div>
               </div>
@@ -58,7 +58,7 @@
 
         <div class="middle-div">
               <br>
-              <h3> Budget Available: 10000</h3>
+              <h3> Budget Available: <i data-v-264bddce="" class="icon-zcore"></i>{{status.amount.available}}</h3>
               <div class="progress">
               <svg class="svg-progress" height="100" width="500">
                 <path d="M0 0 L 500 0 L 500 70 L 0 70Z" fill="white" />
@@ -66,11 +66,11 @@
               </svg>
               <div class="progress-information">
               <div id="svg-progress-left">
-                  <h2>1000</h2>
+                  <h2>{{status.amount.allocated}}</h2>
                   <h3>Budget Allocated</h3>
               </div>
               <div id="svg-progress-right">
-                  <h2>5</h2>
+                  <h2>{{status.amount.unallocated}}</h2>
                   <h3>Unallocated Budget</h3>
               </div>
               </div>
@@ -95,7 +95,7 @@
         ready: false,
         infoReady: false,
         watchers: [],
-        status: [],
+        status: {},
         error: {
           message: '',
           valid: false,
@@ -133,21 +133,20 @@
               this.status = this.dash.task.result.status;
               this.infoReady = true;
             }
-            this.status = [
-              {
+            this.status = {
                 deadline: 5,
                 masternodes: 120,
                 amount: {
                   available: 2048,
-                  requested: 110
+                  requested: 110,
+                  allocated: 100,
+                  unallocated: 1948,
                 },
                 proposal: {
                   passing: 2,
                   insufficient: 1,
-                  allocated: 110,
                 }
-              },
-            ]
+              };
             clearInterval(this.watchers[watchNUM]);
           }
         }));
@@ -161,7 +160,7 @@
 }
 
 @media only screen and (max-width: 600px) {
-  #content {
+  .status-content {
     display: none;
   }
 }
@@ -471,7 +470,7 @@
     margin: 0;
     padding: 0;
     top: -100px;
-    right: 0;
+    right: -75px;
     color: #f2f2f2cc;
 }
 
