@@ -237,6 +237,7 @@
               this.proposals = this.dash.task.result.proposals;
               this.listReady = true;
             }
+            //for test purposes only
             this.proposals = [
               {
                 index: '1',
