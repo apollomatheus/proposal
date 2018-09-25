@@ -230,15 +230,20 @@
         //wait task response
         this.watchers.push(setInterval(()=>{
           if (this.dash.task.ready) {
-            if (this.dash.task.error.length > 0) {
-              this.error.message = this.dash.task.error;
-              this.error.valid = true;
-            } else {
+            if (this.dash.task.error) {
+              if (this.dash.task.error.length > 0) {
+                this.error.message = this.dash.task.error;
+                this.error.valid = true;
+                return;
+              }
+            } 
+            this.proposals = [];
+            if (this.dash.task.result.proposals) {
               this.proposals = this.dash.task.result.proposals;
-              this.listReady = true;
             }
+            this.listReady = true;
             //for test purposes only
-            this.proposals = [
+            /*this.proposals = [
               {
                 index: '1',
                 hash: 'abcdefghijklmnopqrstuvxwyz1234567890',
@@ -277,7 +282,7 @@
                   no: 5,
                 }
               },
-            ]
+            ]*/
             clearInterval(this.watchers[watchNUM]);
           }
         }));

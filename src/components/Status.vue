@@ -126,14 +126,19 @@
         //wait task response
         this.watchers.push(setInterval(()=>{
           if (this.dash.task.ready) {
-            if (this.dash.task.error.length > 0) {
-              this.error.message = this.dash.task.error;
-              this.error.valid = true;
-            } else {
+            if (this.dash.task.error) {
+              if (this.dash.task.error.length > 0) {
+                this.error.message = this.dash.task.error;
+                this.error.valid = true;
+                return;
+              }
+            } 
+            this.status = {};
+            if (this.dash.task.result.status) {
               this.status = this.dash.task.result.status;
-              this.infoReady = true;
             }
-            this.status = {
+            this.infoReady = true;
+            /*this.status = {
                 deadline: 5,
                 masternodes: 120,
                 amount: {
@@ -146,7 +151,7 @@
                   passing: 2,
                   insufficient: 1,
                 }
-              };
+            };*/
             clearInterval(this.watchers[watchNUM]);
           }
         }));

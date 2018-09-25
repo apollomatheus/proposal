@@ -2,7 +2,7 @@ const request = require('request');
 
 
 const state = {
-    api_url: 'http://localhost:3000',
+    api_url: 'http://localhost:3080',
     logged: false,
     session: '',
     task: {
@@ -58,10 +58,8 @@ const mutations = {
             }
             if (error) {
                 state.task.error = error;
-            } else if (body.status != 200) {
-                state.task.error = body.error;
-            } else if (body.status == 200) {
-                state.task.result = body.result;
+            } else {
+                state.task.result = JSON.parse(body);
             }
         });
 
