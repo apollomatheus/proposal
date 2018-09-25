@@ -119,42 +119,37 @@
     created() {
         this.head = this.settings.current.page.head;
         this.ready = true;
+        var gsstask = -1;
         //call for task proposal
-        this.$store.commit('GetApiTask',{id:'GSS'});
-        //create a watcher
-        let watchNUM = this.watchers.length;
-        //wait task response
-        this.watchers.push(setInterval(()=>{
-          if (this.dash.task.ready) {
-            if (this.dash.task.error) {
-              if (this.dash.task.error.length > 0) {
-                this.error.message = this.dash.task.error;
-                this.error.valid = true;
-                return;
-              }
-            } 
-            this.status = {};
-            if (this.dash.task.result.status) {
-              this.status = this.dash.task.result.status;
-            }
-            this.infoReady = true;
-            /*this.status = {
-                deadline: 5,
-                masternodes: 120,
-                amount: {
-                  available: 2048,
-                  requested: 110,
-                  allocated: 100,
-                  unallocated: 1948,
-                },
-                proposal: {
-                  passing: 2,
-                  insufficient: 1,
+        this.$store.commit('GetApiTask', {id:'GSS', register: (task)=> {
+          gsstask = task;
+        }});
+        //task not created
+        if (gsstask < 0) {
+          this.error.message = 'Something went wrong';
+          this.error.valid = true;
+        } else {
+          //create a watcher
+          let watchNUM = this.watchers.length;
+          //wait task response
+          this.watchers.push(setInterval(()=>{
+            if (this.dash.tasks[gsstask].ready) {
+              if (this.dash.tasks[gsstask].error) {
+                if (this.dash.tasks[gsstask].error.length > 0) {
+                  this.error.message = this.dash.tasks[gsstask].error;
+                  this.error.valid = true;
+                  return;
                 }
-            };*/
-            clearInterval(this.watchers[watchNUM]);
-          }
-        }));
+              } 
+              this.status = {};
+              if (this.dash.tasks[gsstask].result.status) {
+                this.status = this.dash.tasks[gsstask].result.status;
+                this.infoReady = true;
+              }
+              clearInterval(this.watchers[watchNUM]);
+            }
+          }));
+        }
     }
   }
 </script>

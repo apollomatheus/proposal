@@ -223,69 +223,37 @@
     created() {
         this.head = this.settings.current.page.head;
         this.ready = true;
+        var gsstask = -1;
         //call for task proposal
-        this.$store.commit('GetApiTask',{id:'GSP'});
-        //create a watcher
-        let watchNUM = this.watchers.length;
-        //wait task response
-        this.watchers.push(setInterval(()=>{
-          if (this.dash.task.ready) {
-            if (this.dash.task.error) {
-              if (this.dash.task.error.length > 0) {
-                this.error.message = this.dash.task.error;
-                this.error.valid = true;
-                return;
+        this.$store.commit('GetApiTask', {id:'GSP', register: (task)=> {
+          gsstask = task;
+        }});
+        //task not created
+        if (gsstask < 0) {
+          this.error.message = 'Something went wrong';
+          this.error.valid = true;
+        } else {
+          //create a watcher
+          let watchNUM = this.watchers.length;
+          //wait task response
+          this.watchers.push(setInterval(()=>{
+            if (this.dash.tasks[gsstask].ready) {
+              if (this.dash.tasks[gsstask].error) {
+                if (this.dash.tasks[gsstask].error.length > 0) {
+                  this.error.message = this.dash.tasks[gsstask].error;
+                  this.error.valid = true;
+                  return;
+                }
+              } 
+              this.proposals = [];
+              if (this.dash.tasks[gsstask].result.proposals) {
+                this.proposals = this.dash.tasks[gsstask].result.proposals;
+                this.listReady = true;
               }
-            } 
-            this.proposals = [];
-            if (this.dash.task.result.proposals) {
-              this.proposals = this.dash.task.result.proposals;
+              clearInterval(this.watchers[watchNUM]);
             }
-            this.listReady = true;
-            //for test purposes only
-            /*this.proposals = [
-              {
-                index: '1',
-                hash: 'abcdefghijklmnopqrstuvxwyz1234567890',
-                name: 'Proposal test',
-                url: 'http://www.internet.com',
-                amount: {
-                  payment: {
-                    paid: 1,
-                    total: 5,
-                  },
-                  request: 10.00,
-                  available: 2.00,
-                },
-                masternodes: 120,
-                votes: {
-                  yes: 100,
-                  no: 20,
-                }
-              },
-              {
-                index: '2',
-                hash: 'abcdefghijklmnopqrstuvxwyz1234567890',
-                name: 'Proposal test 2',
-                url: 'http://www.internet.br',
-                amount: {
-                  payment: {
-                    paid: 1,
-                    total: 5,
-                  },
-                  request: 10.00,
-                  available: 2.00,
-                },
-                masternodes: 120,
-                votes: {
-                  yes: 10,
-                  no: 5,
-                }
-              },
-            ]*/
-            clearInterval(this.watchers[watchNUM]);
-          }
-        }));
+          }));
+        }
     }
   }
 </script>

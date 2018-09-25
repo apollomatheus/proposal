@@ -5,12 +5,7 @@ const state = {
     api_url: 'http://localhost:3080',
     logged: false,
     session: '',
-    task: {
-        id: '',
-        ready: false,
-        error: '',
-        result: {},
-    },
+    tasks: [],
     config: [],
     responses: [
         {code: 11, valid: true},
@@ -26,41 +21,48 @@ const state = {
 ///GSP-> Get System Proposals
 const mutations = {
     GetApiTask(state, task) {
-        if (state.task.id == task.id) {
-            if (state.task.ready == false) return;
-        }
+        let cmd = '';
 
-        state.task.id = task.id;
-        state.task.ready = false;
-        state.task.error = '';
-        
-        let url = state.api_url;
         switch (task.id) {
             case "GSS": {
-                url += '/status';
+                cmd = '/status';
                 break;
             }
             case "GSP": {
-                url += '/proposals';
+                cmd = '/proposals';
                 break;
             }
             default:
-            return;
+            return -1;
         }
+        
+        var tasknum = state.tasks.length;
+
+        state.tasks.push({
+            action: task.id,
+            ready: false,
+            error: '',
+            result: {},
+        });
+        
+        task.register(tasknum);
 
         request({
-            url,
+            url: state.api_url+cmd,
         }, function(error, response, body){
-            state.task.ready = true;
             if (response) {
-                if (response.statusCode != 200)
-                    state.task.error = 'Connection failed!';
+                if (response.statusCode != 200) {
+                    state.tasks[tasknum].error = 'Connection failed!';
+                }
             }
-            if (error) {
-                state.task.error = error;
-            } else {
-                state.task.result = JSON.parse(body);
+            if (body) {
+                if (error) {
+                    state.tasks[tasknum].error = error;
+                } else {
+                    state.tasks[tasknum].result = JSON.parse(body);
+                }
             }
+            state.tasks[tasknum].ready = true;
         });
 
     },
