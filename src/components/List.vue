@@ -223,37 +223,56 @@
     created() {
         this.head = this.settings.current.page.head;
         this.ready = true;
-        var gsstask = -1;
-        //call for task proposal
-        this.$store.commit('GetApiTask', {id:'GSP', register: (task)=> {
-          gsstask = task;
-        }});
-        //task not created
-        if (gsstask < 0) {
-          this.error.message = 'Something went wrong';
-          this.error.valid = true;
-        } else {
-          //create a watcher
-          let watchNUM = this.watchers.length;
-          //wait task response
-          this.watchers.push(setInterval(()=>{
-            if (this.dash.tasks[gsstask].ready) {
-              if (this.dash.tasks[gsstask].error) {
-                if (this.dash.tasks[gsstask].error.length > 0) {
-                  this.error.message = this.dash.tasks[gsstask].error;
-                  this.error.valid = true;
-                  return;
+        //create a watcher
+        let watchNUM = this.watchers.length;
+        let gsstask = -1;
+          
+        //wait task response
+        this.watchers.push(setInterval(()=>{
+          if (gsstask < 0) {
+            let wNUM = this.watchers.length;
+            let TaskDone = false;
+            let TaskInterval = 100;
+
+            //call for task proposal
+            this.$store.commit('GetApiTask', {id:'GSP', register: (task) => {
+              gsstask = task;
+            }});
+
+            //wait task response
+            this.watchers.push(setInterval(()=>{
+              if (!TaskDone) {
+                if (this.dash.tasks[gsstask].ready) {
+                  TaskDone = true;
+                  TaskInterval = 10000;
+
+                  if (this.dash.tasks[gsstask].error) {
+                    if (this.dash.tasks[gsstask].error.length > 0) {
+                      this.error.message = this.dash.tasks[gsstask].error;
+                      this.error.valid = true;
+                    }
+                  } else {
+                    this.proposals = [];
+                    if (this.dash.tasks[gsstask].result.proposals) {
+                      this.proposals = this.dash.tasks[gsstask].result.proposals;
+                      this.listReady = true;
+                    } else {
+                      this.error.message = 'Failed to retrieve API information!';
+                      this.error.valid = true;
+                    }
+                  } 
+
+                  var tm = setTimeout(()=>{
+                    console.log('Updating...');
+                    this.listReady = false;
+                    clearInterval(this.watchers[wNUM]);
+                    gsstask = -1;
+                  },2*60000);//2 minutes
                 }
-              } 
-              this.proposals = [];
-              if (this.dash.tasks[gsstask].result.proposals) {
-                this.proposals = this.dash.tasks[gsstask].result.proposals;
-                this.listReady = true;
               }
-              clearInterval(this.watchers[watchNUM]);
-            }
-          }));
-        }
+            },TaskInterval));
+          }
+      },3000));
     }
   }
 </script>
