@@ -29,54 +29,57 @@
       <div v-if="infoReady">
         <h3 v-if="!status"> Empty information </h3>
         <div v-if="status" id="list">
-        <div class="voting-header"> 
-        <div class="left-div">
+
+<div class="voting-header" style="height: 560px;"> 
+
+        <div class="top-middle-div">
               <center><h3> Voting  Deadline </h3></center>
-              <center><h2> <b>{{status.deadline}} DAYS</b> </h2></center>
+              <center><h2> {{status.deadline}} <b>DAYS</b> </h2></center>
+              <center><h3> {{getStatusDate()}} </h3></center>
         </div>
-        <div class="voting-header"> 
-        <div class="middle-div">
-              <br>
-              <h3> Budget Requested: <i data-v-264bddce="" class="icon-zcore"></i>{{status.amount.requested}} </h3>
+
+        <div class="voting-header" style="height: 300px; top: 70px"> 
+
+        <div class="middle-div-left" id="middle-div">
+              <h3 class="progress-title"> Budget Requested: <i data-v-264bddce="" class="icon-zcore"></i>{{status.amount.requested}}</h3>
               <div class="progress">
               <svg class="svg-progress" height="100" width="500">
                 <path d="M0 0 L 500 0 L 500 70 L 0 70Z" fill="white" />
                 <path d="M360 10 L 480 10 L 480 60 L 360 60Z"  id="miss-progress" class="status-box-false" />
               </svg>
               <div class="progress-information">
-              <div id="svg-progress-left">
+              <div class="progress-left">
                   <h2>{{status.proposal.passing}}</h2>
                   <h3>Passing Proposals</h3>
               </div>
-              <div id="svg-progress-right">
-                  <h2>{{status.proposal.insufficient}}</h2>
-                  <h3>Insufficient votes</h3>
+              <div class="progress-right">
+                  <h2 style="right: -70px;">{{status.proposal.insufficient}}</h2>
+                  <h3 style="right: -90px;">Insufficient votes</h3>
               </div>
               </div>
               </div>
         </div>
 
-        <div class="middle-div">
-              <br>
-              <h3> Budget Available: <i data-v-264bddce="" class="icon-zcore"></i>{{status.amount.available}}</h3>
+        <div class="middle-div-right" id="middle-div">
+              <h3 class="progress-title"> Budget Available: <i data-v-264bddce="" class="icon-zcore"></i>{{status.amount.available}}</h3>
               <div class="progress">
               <svg class="svg-progress" height="100" width="500">
                 <path d="M0 0 L 500 0 L 500 70 L 0 70Z" fill="white" />
                 <path d="M360 10 L 480 10 L 480 60 L 360 60Z"  id="miss-progress" class="status-box-false" />
               </svg>
               <div class="progress-information">
-              <div id="svg-progress-left">
+              <div class="progress-left">
                   <h2>{{status.amount.allocated}}</h2>
                   <h3>Budget Allocated</h3>
               </div>
-              <div id="svg-progress-right">
-                  <h2>{{status.amount.unallocated}}</h2>
-                  <h3>Unallocated Budget</h3>
+              <div class="progress-right">
+                  <h2 style="right: -70px;">{{status.amount.unallocated}}</h2>
+                  <h3 style="right: -90px;">Unallocated Budget</h3>
               </div>
               </div>
               </div>
-        </div>
-        </div>
+          </div>
+         </div>
         </div>
         </div>
       </div>
@@ -111,6 +114,16 @@
     },
 
     methods: {
+      getStatusDate() {
+        if (this.infoReady) {
+          var months = ['January','February','March','April',
+                        'May','June','July','August',
+                        'September','October','November','December'];
+          var month =months[Math.round(this.status.date.month)-1]; 
+          return month+' '+this.status.date.day+', '+this.status.date.year;
+        }
+        return '';
+      },
       go(s) {
         this.$store.commit('EMIT_REDIRECT', { url: this.settings.current.page.url, sector: s });
       },
@@ -178,7 +191,7 @@
   min-height: 100px;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1024px) {
   .status-content {
     display: none;
   }
@@ -380,22 +393,23 @@
     opacity: 1;
 }
 
-
 .voting-header h3 {
   padding: 0;
-  padding-top: 30px;
-  font-size: 20px;
-  font-family: monospace;
+  padding-top: 20px;
+  font-size: 16px;
+  font-family: arial;
+  text-transform: uppercase;
 }
 
 .voting-header h2 {
-  font-size: 38px;
+  font-size: 68px;
+  margin: 0;
   word-wrap: break-word;
 }
 
 .voting-header .left-div h3 {
   margin-top: 80px;
-  font-size: 16px;
+  font-size: 30px;
   font-family: Arial;
   text-transform: uppercase;
 }
@@ -406,45 +420,61 @@
   text-transform: uppercase;
 }
 
-
-.status-box-ok {
-    fill: url(#lg-ok);
-    filter: url(#f1);
-}
-
-.status-box-false {
-    fill: url(#lg-false);
-    filter: url(#f1);
-}
-
-.status-box-false:hover {
-  width: 0;
-  height: 0;
-  transition: all 1s ease 0s;
-}
-
 .voting-header {
-    padding: 50px;
+    position: relative;
+    padding-left: 50px;
+    padding-right: 50px;
     color: #fff;
     height: 430px;
     line-height: 3em;
     box-shadow: -2px 5px 10px 5px #00000022;
     background-image: radial-gradient(#009973,#009973,#00b386);
     font-family: monospace;
+    width: auto;
 }
 
-.middle-div {
-    padding: 0;
-    margin-top: -80px;
-    position: relative;
-    left: 45%;
-    top: 0;
+.middle-div-left {
+    position: absolute;
+    padding: 30px;
+    margin-top: 100px;
+    left: 0;
 }
+
+.middle-div-right {
+    padding: 30px;
+    margin-top: 100px;
+    position: absolute;
+    right: 0;
+    
+}
+
+#middle-div h2 {
+    position: absolute;
+    margin: 3px;
+    padding: 0;
+    top: -100px;
+    font-size: 32px;
+    color: #000000cc;
+    font-family: Arial;
+}
+
+#middle-div h3 {
+   position: absolute;
+   margin: 0;
+   padding: 0;
+   top: -20px;
+   font-size: 15px;
+   color: #f2f2f2cc;
+   font-family: monospace;
+}
+
+
 .left-div {
     position: absolute;
     left: 10%;
     font-size: 30px;
 }
+
 .right-div {
     position: absolute;
     right: 10%;
@@ -465,41 +495,20 @@
     height: 20px;
     color: #001100;
 }
-#svg-progress-left h2 {
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    top: -100px;
-    right: 0;
-    left: 20px;
+
+.status-box-ok {
+    fill: url(#lg-ok);
+    filter: url(#f1);
 }
 
-#svg-progress-left h3{
-   position: absolute;
-   margin: 0;
-   padding: 0;
-   top: -50px;
-   margin-left: 0;
-   font-size: 15px;
-   color: #f2f2f2cc;
+.status-box-false {
+    fill: url(#lg-false);
+    filter: url(#f1);
 }
 
-#svg-progress-right h2 {
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    top: -100px;
-    right: -75px;
-    color: #f2f2f2cc;
-}
-
-#svg-progress-right h3 {
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    top: -50px;
-    right: -100px;
-    color: #f2f2f2cc;
-    font-size: 15px;
+.status-box-false:hover {
+  fill: red;
+  opacity: 0.8;
+  transition: all 1s ease 0s;
 }
 </style>

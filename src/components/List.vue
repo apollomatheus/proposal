@@ -65,7 +65,7 @@
                         {{item.name}}
                       </div>
                       <div id="list-item-name">
-                        <a :href="item.url">{{item.url}}</a>
+                        <a :href="fixURL(item.url)">{{item.url}}</a>
                       </div>
                     </td>
                     <!-- paument -->
@@ -100,7 +100,7 @@
                       </div>
                       <div id="list-item-name"  v-if="(item.votes.yes-item.votes.no) < item.masternodes * 0.10" style="color: #aa0000dd">
                           <i class="fas fa-times"></i> 
-                          Insufficient Votes
+                          <b>Insufficient Votes</b>
                       </div>
                     </td>
                     <!-- actions -->
@@ -176,6 +176,14 @@
     },
 
     methods: {
+      fixURL(text) {
+        var init = text.substr(0, 6);
+        var http = (init == 'https:') ? 'https:': ((init == 'http:/') ? 'http:/': '');
+        if (http.length > 0) {
+          return text;
+        } 
+        return 'http://'+text;
+      },
       updateElement(element,html) {
         if (element) {
           element.innerHTML = html;
@@ -281,7 +289,7 @@
 
 .application--wrap {
   min-height: 100px;
-  margin-top: 50px;
+  margin-top: 10px;
 }
 
 #content {
