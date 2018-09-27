@@ -179,9 +179,7 @@
       fixURL(text) {
         var init = text.substr(0, 6);
         var http = (init == 'https:') ? 'https:': ((init == 'http:/') ? 'http:/': '');
-        if (http.length > 0) {
-          return text;
-        } 
+        if (http.length > 0) return text;
         return 'http://'+text;
       },
       updateElement(element,html) {
